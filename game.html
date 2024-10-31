@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тапание шариков</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <p id="score">Счёт: 0</p>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+
+        let score = 0;
+        let ball = {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: 20
+        };
+
+        function drawBall() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function moveBall() {
+            ball.x = Math.random() * (canvas.width - 2 * ball.radius) + ball.radius;
+            ball.y = Math.random() * (canvas.height - 2 * ball.radius) + ball.radius;
+            drawBall();
+        }
+
+        canvas.addEventListener("click", function (event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            const distance = Math.sqrt(
+                (mouseX - ball.x) * (mouseX - ball.x) + 
+                (mouseY - ball.y) * (mouseY - ball.y)
+            );
+
+            if (distance < ball.radius) {
+                score++;
+                scoreElement.textContent = "Счёт: " + score;
+                moveBall();
+            }
+        });
+
+        drawBall();
+    </script>
+</body>
+</html>
