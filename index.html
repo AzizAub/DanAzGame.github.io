@@ -1,68 +1,148 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Тапание шариков</title>
+    <title>Змейка</title>
     <style>
         canvas {
             border: 1px solid black;
             display: block;
             margin: auto;
         }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <h1>Змейка</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
     <p id="score">Счёт: 0</p>
+    <div class="controls">
+        <button onclick="changeDirection('UP')">Вверх</button>
+        <button onclick="changeDirection('LEFT')">Влево</button>
+        <button onclick="changeDirection('RIGHT')">Вправо</button>
+        <button onclick="changeDirection('DOWN')">Вниз</button>
+    </div>
+    <button onclick="restartGame()">Restart</button>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        const scoreElement = document.getElementById("score");
-
-        // Устанавливаем размеры canvas в соответствии с размером окна Telegram
-        canvas.width = window.innerWidth * 0.9; // 90% ширины окна
-        canvas.height = window.innerHeight * 0.8; // 80% высоты окна
-
-        let score = 0;
-        let ball = {
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            radius: 20
+        const boxSize = 20; // Размер одного сегмента змейки
+        let snake = [{ x: 9 * boxSize, y: 10 * boxSize }]; // Начальная позиция змейки
+        let food = { 
+            x: Math.floor(Math.random() * 19 + 1) * boxSize,
+            y: Math.floor(Math.random() * 19 + 1) * boxSize
         };
+        let direction = null;
+        let score = 0;
+        let gameInterval;
 
-        function drawBall() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        // Рисуем змейку
+        function drawSnake() {
+            snake.forEach(segment => {
+                ctx.fillStyle = "green";
+                ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+            });
+        }
+
+        // Рисуем еду
+        function drawFood() {
             ctx.fillStyle = "red";
-            ctx.fill();
-            ctx.closePath();
+            ctx.fillRect(food.x, food.y, boxSize, boxSize);
         }
 
-        function moveBall() {
-            ball.x = Math.random() * (canvas.width - 2 * ball.radius) + ball.radius;
-            ball.y = Math.random() * (canvas.height - 2 * ball.radius) + ball.radius;
-            drawBall();
-        }
+        // Перемещаем змейку
+        function moveSnake() {
+            if (!direction) return; // Если направление не задано, не двигаться
 
-        canvas.addEventListener("click", function (event) {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
+            const head = { x: snake[0].x, y: snake[0].y };
 
-            const distance = Math.sqrt(
-                (mouseX - ball.x) * (mouseX - ball.x) + 
-                (mouseY - ball.y) * (mouseY - ball.y)
-            );
+            // Устанавливаем новое направление
+            if (direction === "LEFT") head.x -= boxSize;
+            if (direction === "UP") head.y -= boxSize;
+            if (direction === "RIGHT") head.x += boxSize;
+            if (direction === "DOWN") head.y += boxSize;
 
-            if (distance < ball.radius) {
-                score++;
-                scoreElement.textContent = "Счёт: " + score;
-                moveBall();
+            // Проверка на столкновение со стеной
+            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+                endGame();
+                return;
             }
-        });
 
-        drawBall();
+            // Проверка на столкновение с самой собой
+            for (let segment of snake) {
+                if (head.x === segment.x && head.y === segment.y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            // Добавляем новую голову
+            snake.unshift(head);
+
+            // Если змейка съела еду
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                document.getElementById("score").textContent = "Счёт: " + score;
+                food = {
+                    x: Math.floor(Math.random() * 19 + 1) * boxSize,
+                    y: Math.floor(Math.random() * 19 + 1) * boxSize
+                };
+            } else {
+                snake.pop(); // Убираем последний сегмент
+            }
+        }
+
+        // Управление с помощью кнопок
+        function changeDirection(newDirection) {
+            if (newDirection === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+            if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
+            if (newDirection === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+            if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
+        }
+
+        // Функция для завершения игры
+        function endGame() {
+            clearInterval(gameInterval); // Останавливаем игру
+            alert("Игра окончена! Ваш счёт: " + score);
+        }
+
+        // Функция для перезапуска игры
+        function restartGame() {
+            clearInterval(gameInterval); // Останавливаем текущую игру
+            score = 0;
+            document.getElementById("score").textContent = "Счёт: " + score;
+            snake = [{ x: 9 * boxSize, y: 10 * boxSize }]; // Сбрасываем змейку
+            direction = null; // Сбрасываем направление
+            food = {
+                x: Math.floor(Math.random() * 19 + 1) * boxSize,
+                y: Math.floor(Math.random() * 19 + 1) * boxSize
+            };
+            gameInterval = setInterval(gameLoop, 100); // Запускаем новую игру
+        }
+
+        // Главная функция игры
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawSnake();
+            drawFood();
+            moveSnake();
+        }
+
+        // Запускаем игру
+        gameInterval = setInterval(gameLoop, 100);
 
         // Инициализация Web App
         window.Telegram.WebApp.ready();
