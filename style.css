@@ -1,0 +1,74 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif; /* Добавим шрифт для текста */
+}
+
+.game-container {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #333;
+}
+
+#current-player {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    gap: 0;
+    border: 2px solid #333;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell.black {
+    background-color: #cccccc;
+}
+
+.cell.white {
+    background-color: #fff;
+}
+
+.piece {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    cursor: pointer;
+    box-shadow: 2px 6px 8px 1px rgba(34, 60, 80, 0.2);
+}
+
+.piece.white {
+    background-color: white;
+}
+
+.piece.black {
+    background-color: black;
+}
+
+.piece.king {
+    border: 2px solid #fc7f49;
+}
+
+.piece.selected {
+    outline: 2px solid #ff0000; /* Подсветка выбранной шашки */
+}
