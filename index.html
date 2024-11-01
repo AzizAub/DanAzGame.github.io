@@ -12,12 +12,16 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
     <p id="score">Счёт: 0</p>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const scoreElement = document.getElementById("score");
+
+        // Устанавливаем размеры canvas в соответствии с размером окна Telegram
+        canvas.width = window.innerWidth * 0.9; // 90% ширины окна
+        canvas.height = window.innerHeight * 0.8; // 80% высоты окна
 
         let score = 0;
         let ball = {
@@ -55,9 +59,6 @@
                 score++;
                 scoreElement.textContent = "Счёт: " + score;
                 moveBall();
-
-                // Отправляем счёт в Telegram
-                Telegram.WebApp.sendData(score.toString());
             }
         });
 
@@ -65,11 +66,6 @@
 
         // Инициализация Web App
         window.Telegram.WebApp.ready();
-        console.log("Telegram Web App инициализирован");
-
-        // Получаем информацию о пользователе
-        const user = window.Telegram.WebApp.initDataUnsafe.user;
-        console.log("Информация о пользователе:", user);
     </script>
 </body>
 </html>
