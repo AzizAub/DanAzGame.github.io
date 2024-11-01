@@ -1,151 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Змейка</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-            display: block;
-            margin: auto;
-        }
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        button {
-            margin: 5px;
-            padding: 10px;
-            font-size: 16px;
-        }
-    </style>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="utf-8">
+  <title>2048</title>
+
+  <link href="style/main.css" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- Подключаем Telegram Web App API -->
 </head>
 <body>
-    <h1>Змейка</h1>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <p id="score">Счёт: 0</p>
-    <div class="controls">
-        <button onclick="changeDirection('UP')">Вверх</button>
-        <button onclick="changeDirection('LEFT')">Влево</button>
-        <button onclick="changeDirection('RIGHT')">Вправо</button>
-        <button onclick="changeDirection('DOWN')">Вниз</button>
+  <div class="container">
+    <div class="heading">
+      <h1 class="title">2048</h1>
+      <div class="scores-container">
+        <div class="score-container">0</div>
+        <div class="best-container">0</div>
+      </div>
     </div>
-    <button onclick="restartGame()">Restart</button>
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const boxSize = 20; // Размер одного сегмента змейки
-        let snake = [{ x: 9 * boxSize, y: 10 * boxSize }]; // Начальная позиция змейки
-        let food = { 
-            x: Math.floor(Math.random() * 19 + 1) * boxSize,
-            y: Math.floor(Math.random() * 19 + 1) * boxSize
-        };
-        let direction = null;
-        let score = 0;
-        let gameInterval;
 
-        // Рисуем змейку
-        function drawSnake() {
-            snake.forEach(segment => {
-                ctx.fillStyle = "green";
-                ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
-            });
-        }
+    <div class="above-game">
+      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+      <a class="restart-button" onclick="restartGame()">New Game</a> <!-- Добавляем вызов функции перезапуска -->
+    </div>
 
-        // Рисуем еду
-        function drawFood() {
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, boxSize, boxSize);
-        }
+    <div class="game-container">
+      <div class="game-message">
+        <p></p>
+        <div class="lower">
+	        <a class="keep-playing-button">Keep going</a>
+          <a class="retry-button">Try again</a>
+        </div>
+      </div>
 
-        // Перемещаем змейку
-        function moveSnake() {
-            if (!direction) return; // Если направление не задано, не двигаться
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+      </div>
 
-            const head = { x: snake[0].x, y: snake[0].y };
+      <div class="tile-container">
 
-            // Устанавливаем новое направление
-            if (direction === "LEFT") head.x -= boxSize;
-            if (direction === "UP") head.y -= boxSize;
-            if (direction === "RIGHT") head.x += boxSize;
-            if (direction === "DOWN") head.y += boxSize;
+      </div>
+    </div>
 
-            // Проверка на столкновение со стеной
-            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
-                endGame();
-                return;
-            }
+    <p class="game-explanation">
+      <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
+    </p>
+    <hr>
+    <p>
+    <strong class="important">Note:</strong> This site is the official version of 2048. You can play it on your phone via <a href="http://git.io/2048">http://git.io/2048.</a> All other apps or sites are derivatives or fakes, and should be used with caution.
+    </p>
+    <hr>
+    <p>
+    Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
+    </p>
+  </div>
 
-            // Проверка на столкновение с самой собой
-            for (let segment of snake) {
-                if (head.x === segment.x && head.y === segment.y) {
-                    endGame();
-                    return;
-                }
-            }
+  <script src="js/bind_polyfill.js"></script>
+  <script src="js/classlist_polyfill.js"></script>
+  <script src="js/animframe_polyfill.js"></script>
+  <script src="js/keyboard_input_manager.js"></script>
+  <script src="js/html_actuator.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/tile.js"></script>
+  <script src="js/local_storage_manager.js"></script>
+  <script src="js/game_manager.js"></script>
+  <script src="js/application.js"></script>
 
-            // Добавляем новую голову
-            snake.unshift(head);
+  <script>
+    // Инициализация Telegram Web App
+    window.Telegram.WebApp.ready();
+    console.log("Telegram Web App инициализирован");
 
-            // Если змейка съела еду
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                document.getElementById("score").textContent = "Счёт: " + score;
-                food = {
-                    x: Math.floor(Math.random() * 19 + 1) * boxSize,
-                    y: Math.floor(Math.random() * 19 + 1) * boxSize
-                };
-            } else {
-                snake.pop(); // Убираем последний сегмент
-            }
-        }
-
-        // Управление с помощью кнопок
-        function changeDirection(newDirection) {
-            if (newDirection === "LEFT" && direction !== "RIGHT") direction = "LEFT";
-            if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
-            if (newDirection === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
-            if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
-        }
-
-        // Функция для завершения игры
-        function endGame() {
-            clearInterval(gameInterval); // Останавливаем игру
-            alert("Игра окончена! Ваш счёт: " + score);
-        }
-
-        // Функция для перезапуска игры
-        function restartGame() {
-            clearInterval(gameInterval); // Останавливаем текущую игру
-            score = 0;
-            document.getElementById("score").textContent = "Счёт: " + score;
-            snake = [{ x: 9 * boxSize, y: 10 * boxSize }]; // Сбрасываем змейку
-            direction = null; // Сбрасываем направление
-            food = {
-                x: Math.floor(Math.random() * 19 + 1) * boxSize,
-                y: Math.floor(Math.random() * 19 + 1) * boxSize
-            };
-            gameInterval = setInterval(gameLoop, 100); // Запускаем новую игру
-        }
-
-        // Главная функция игры
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawSnake();
-            drawFood();
-            moveSnake();
-        }
-
-        // Запускаем игру
-        gameInterval = setInterval(gameLoop, 100);
-
-        // Инициализация Web App
-        window.Telegram.WebApp.ready();
-    </script>
+    // Функция для перезапуска игры
+    function restartGame() {
+      window.location.reload(); // Перезагружаем страницу, чтобы начать новую игру
+    }
+  </script>
 </body>
 </html>
