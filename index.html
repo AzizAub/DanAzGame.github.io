@@ -55,29 +55,14 @@
                 score++;
                 scoreElement.textContent = "Счёт: " + score;
                 moveBall();
-
-                // Отправляем текущий результат в Telegram
-                TelegramGameProxy.postGameScore(score);
             }
         });
 
         drawBall();
 
-        // Инициализация Telegram Game API
-        window.onload = () => {
-            try {
-                TelegramGameProxy.init({
-                    onGameLoaded: function () {
-                        console.log("Игра успешно загружена!");
-                    },
-                    onError: function (error) {
-                        console.error("Ошибка инициализации игры:", error);
-                    }
-                });
-            } catch (e) {
-                console.error("Ошибка при попытке инициализировать игру:", e);
-            }
-        };
+        // Инициализация Web App
+        window.Telegram.WebApp.ready();
+        console.log("Telegram Web App инициализирован");
     </script>
 </body>
 </html>
