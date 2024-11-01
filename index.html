@@ -55,6 +55,9 @@
                 score++;
                 scoreElement.textContent = "Счёт: " + score;
                 moveBall();
+
+                // Отправляем счёт в Telegram
+                Telegram.WebApp.sendData(score.toString());
             }
         });
 
@@ -63,6 +66,10 @@
         // Инициализация Web App
         window.Telegram.WebApp.ready();
         console.log("Telegram Web App инициализирован");
+
+        // Получаем информацию о пользователе
+        const user = window.Telegram.WebApp.initDataUnsafe.user;
+        console.log("Информация о пользователе:", user);
     </script>
 </body>
 </html>
